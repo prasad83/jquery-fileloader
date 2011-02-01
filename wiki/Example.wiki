@@ -1,3 +1,4 @@
+#labels Featured
 == Code snippet below demonstrates the use of fileloader plugin ==
 
 {{{
@@ -35,7 +36,7 @@
 		   then($.proxy(this, 'last'));
             }
             last : function() {
-            $('body').append($.remoteFileContent('assets/sample.jstmpl'));
+                $('body').append($.remoteFileContent('assets/sample.jstmpl'));
             },
 	}
 	$(function() { (new demoController()).load(); });
