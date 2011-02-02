@@ -54,18 +54,23 @@
 		if (file.match(/\.css$/)) return 'style://'+file;
 		return false;
 	}
+	RemoteFileController.prototype.fileDomNode = function(file) {
+		var node = document.getElementById(this.fileId(file));
+		return node? $(node): false;
+	}
 	RemoteFileController.prototype.isLoaded = function(file) {
-		var id = this.fileId(file);
-		return id? ($(document.getElementById(id)).length > 0) : false;
+		var node = this.fileDomNode(file);
+		return node? true : false;
 	}	
 	RemoteFileController.prototype.fileContent  = function(file) {
-		var id = this.fileId(file);
-		return id? ($(document.getElementById(id)).text()) : false;
+		var node = this.fileDomNode(file);
+		return node? node.text() : false;
 	}
 	
 	RemoteFileController.prototype.fetchWithPromise = function(flist) {
+		var fetchIndexStart = this.files.length;
 		this.files = flist;		
-		this.fetchNext(0);
+		this.fetchNext(fetchIndexStart);
 		return this.dfd.promise();
 	}
 	RemoteFileController.prototype.fetchNext = function(index) {
@@ -161,6 +166,13 @@
 	FileLoaderCls.prototype.fileContentWithPartialFileName = function(name) {
 		var file = $(this.controller.files).filter(function(index,value) { return value.match(new RegExp(name+"$"))});
 		return file.length? this.fileContent(file[0]) : false;
+	}
+	FileLoaderCls.prototype.fileDomNode = function(file) {
+		return this.controller.fileDomNode(file);
+	}
+	FileLoaderCls.prototype.fileDomNodeWithPartialFileName = function(name) {
+		var file = $(this.controller.files).filter(function(index,value) { return value.match(new RegExp(name+"$"))});
+		return file.length? this.fileDomNode(file[0]) : false;
 	}
 	
 	/** 
