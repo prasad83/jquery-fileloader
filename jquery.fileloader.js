@@ -68,9 +68,8 @@
 	}
 	
 	RemoteFileController.prototype.fetchWithPromise = function(flist) {
-		var fetchIndexStart = this.files.length;
 		this.files = flist;		
-		this.fetchNext(fetchIndexStart);
+		this.fetchNext(0);
 		return this.dfd.promise();
 	}
 	RemoteFileController.prototype.fetchNext = function(index) {
