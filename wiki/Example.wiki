@@ -7,7 +7,7 @@
 <head>
     <title>Example: jquery-loader</title>
     <script type="text/javascript" src="jquery.1.5.js"></script>
-    <script type="text/javascript" src="fileloader.js"></script>		
+    <script type="text/javascript" src="jquery.fileloader.js"></script>		
 </head>
 	
 <body>
