@@ -68,13 +68,12 @@
 	}
 	
 	RemoteFileController.prototype.fetchWithPromise = function(flist) {
-		this.files = flist;		
+		this.files = flist;
 		this.fetchNext(0);
 		return this.dfd.promise();
 	}
 	RemoteFileController.prototype.fetchNext = function(index) {
 		var file = this.files[index];
-
 		if (this.isLoaded(file)) {
 			this.fetchComplete(index,false,-1,false);
 		} else {
@@ -124,9 +123,7 @@
 			}
 		} else if (status == 0 /* Error */ || status == -1 /* Cache */) { }
 		
-		// To let browser take space to settle down
-		var thisObj = this;
-		setTimeout(function(){thisObj.fetchCompleteNext(index,file,status)}, 0);
+		this.fetchCompleteNext(index, file, status);
 	}
 	
 	RemoteFileController.prototype.fetchCompleteNext = function(index, file, status) {
@@ -137,7 +134,11 @@
 		if (index < this.files.length-1) {
 			this.fetchNext(index+1);
 		} else {
-			this.dfd.resolve();
+			//this.dfd.resolve();
+			
+			// To let browser take space to settle down
+			var thisObj = this;
+			setTimeout(function(){thisObj.dfd.resolve()}, 0);
 		}
 	}
 	
