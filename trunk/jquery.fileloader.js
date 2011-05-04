@@ -64,7 +64,11 @@
 	}	
 	RemoteFileController.prototype.fileContent  = function(file) {
 		var node = this.fileDomNode(file);
-		return node? node.text() : false;
+		if (node) {
+			if ($.browser.msie) return node.html();
+			else return node.text();
+		}
+		return false;
 	}
 	
 	RemoteFileController.prototype.fetchWithPromise = function(flist) {
@@ -97,7 +101,10 @@
 	}
 	RemoteFileController.prototype.fetchComplete = function(index,data,status,jqXHR) {	
 		var file = this.files[index];
-		if (status == 1 /* Success */) {
+		if (status == 1 /* Success */ || status == 0 /* Error */) {
+			// Custom hanlding - To avoid repeating 404 response, treat fetch-failure as blank data.
+			if (status == 0 && !data) data = '';
+			
 			if (file.match(/\.js$/)) {
 				//$('head').append('<script type="text/javascript" id="'+this.fileId(file)+'">'+data+'</script>');
 				var scriptNode = document.createElement('script');
@@ -115,13 +122,17 @@
 				document.getElementsByTagName("head")[0].appendChild(tmplNode);
 			} else if (file.match(/\.css$/)) {
 				//$('head').append('<style type="text/css" id="'+this.fileId(file)+'">'+data+"</style>");
+				
+				// Reference: http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
 				var styleNode = document.createElement('style');
-				styleNode.type= 'text/css';
-				styleNode.innerHTML= data;
+				styleNode.setAttribute('type', 'text/css');
+				var rulesNode = document.createTextNode(data);
+				if (styleNode.styleSheet) styleNode.styleSheet.cssText = rulesNode.nodeValue;
+				else styleNode.appendChild(rulesNode);
 				styleNode.id  = this.fileId(file);
 				document.getElementsByTagName("head")[0].appendChild(styleNode);
 			}
-		} else if (status == 0 /* Error */ || status == -1 /* Cache */) { }
+		} else if (status == -1 /* Cache */) { }
 		
 		this.fetchCompleteNext(index, file, status);
 	}
